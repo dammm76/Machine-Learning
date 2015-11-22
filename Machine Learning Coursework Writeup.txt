@@ -1,0 +1,51 @@
+Machine Learning Coursework
+Dave Allen
+22nd November 2015
+
+Using data kindly supplied via http://groupware.les.inf.puc-rio.br/har, the aim was to predict the class (five possibilities from A to E) outcome of 20 test cases based on an available training set of 19,622 observations covering 159 variables (plus the outcome).
+
+The first step was to create a training set from within the presented training database. I chose a partition size of 70%.
+I then looked at the raw data to remove three variable groups;
+•	Anything with near zero variance was omitted. This accounted for 59 variables.
+•	Anything with less than half the data set as NA. In fact 42 variables had 13437 of 13737 observations as NA. The reasoning for this is a data availability of only 2% shouldn’t influence any model produced.
+•	Anything relating to a date or time or that looked like row numbers or grouping, which accounted for a further five variables. This model shouldn’t be timeframe dependent, so removing that influence is the right thing to do. Also as the result field of ‘classe’ appeared to be grouped, anything that was like a row number would automatically come up as a good fit.
+
+With the training data reduced to 53 variables (plus the outcome), a Generalized Boosted Regression Model (known as gbm within R) performed over a 10-fold cross validation set of the training portion of the presented training data set.
+
+The model outcome described 43 variables having a non-zero outcome and nearly one third of the result (32.3%) came from two variable – roll_belt and pitch_forearm.
+
+The expected accuracy based on the training portion was 97.46% (95% CI of 97.18% to 97.72%) which then went on to yield an accuracy of 96.04% on the reserved testing portion of the training set. The detailed output from a confusion matrix can be seen in fig.1
+
+The resultant model when applied to the twenty test variables yielded 20 out of 20 for accuracy.
+
+Fig.1 – Confusion matrix output for the test set prediction vs actual
+
+          Reference
+Prediction    A    B    C    D    E
+         A 1640   36    0    2    3
+         B   19 1066   25    6   13
+         C    7   35  984   32    8
+         D    5    2   13  913    9
+         E    3    0    4   11 1049
+
+Overall Statistics
+                                          
+               Accuracy : 0.9604          
+                 95% CI : (0.9551, 0.9652)
+    No Information Rate : 0.2845          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.9499          
+ Mcnemar's Test P-Value : 1.866e-05       
+
+Statistics by Class:
+
+                     Class: A Class: B Class: C Class: D Class: E
+Sensitivity            0.9797   0.9359   0.9591   0.9471   0.9695
+Specificity            0.9903   0.9867   0.9831   0.9941   0.9963
+Pos Pred Value         0.9756   0.9442   0.9231   0.9692   0.9831
+Neg Pred Value         0.9919   0.9847   0.9913   0.9897   0.9932
+Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
+Detection Rate         0.2787   0.1811   0.1672   0.1551   0.1782
+Detection Prevalence   0.2856   0.1918   0.1811   0.1601   0.1813
+Balanced Accuracy      0.9850   0.9613   0.9711   0.9706   0.9829
